@@ -1,0 +1,10 @@
+.deck-container pre code {
+    color: #eee;
+}
+.deck-container pre code.with-highlight {
+    color: #ddd;
+}
+    .deck-container pre code.with-highlight span.highlight {
+        color: #fff;
+        text-shadow: 0 0 15px #af0, 0 0 2px #fff;
+    }

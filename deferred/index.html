@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>Deferred 对象详解 by 王宇（宇蠢Yuest）</title>
+    
+    <meta name="description" content="A jQuery library for modern HTML presentations">
+    <meta name="author" content="Caleb Troughton">
+    <meta name="viewport" content="width=1024, user-scalable=no">
+    
+    <!-- Core and extension CSS files -->
+    <link rel="stylesheet" href="/slides/deckjs/core/deck.core.css">
+    <link rel="stylesheet" href="/slides/deckjs/extensions/goto/deck.goto.css">
+    <link rel="stylesheet" href="/slides/deckjs/extensions/menu/deck.menu.css">
+    <link rel="stylesheet" href="/slides/deckjs/extensions/status/deck.status.css">
+    <link rel="stylesheet" href="/slides/deckjs/extensions/hash/deck.hash.css">
+    
+    <!-- Theme CSS files (menu swaps these out) -->
+    <link rel="stylesheet" id="style-theme-link" href="/slides/deckjs/themes/style/neon.css">
+    <link rel="stylesheet" id="transition-theme-link" href="/slides/deckjs/themes/transition/fade.css">
+    
+    <!-- Custom CSS just for this page -->
+    <link rel="stylesheet" href="deferred.css">
+    
+    <script src="/slides/deckjs/modernizr.custom.js"></script>
+</head>
+
+<body class="deck-container">
+
+<div class="slide" id="title-slide">
+    <h1>Deferred 对象详解<br><span style="font-size:50%">又名：通过实例理解 Deferred 对象</span><br /><span style="font-size:25%;line-height:2em">by 果壳网 <a href="http://yue.st/">王宇（宇蠢Yuest）</a>on 2011-09-24 W3CTech 交流会</span></h1>
+    <p></p>
+</div>
+
+<div class="slide" id="about">
+    <h2>关于此次分享</h2>
+    <p>目的：通过简单实现一个 Deferred 对象来理解这种编程模式。</p>
+    <ol>
+        <li class="slide">
+            <h3>Deferred (a.k.a. Promise/Future) 简介</h3>
+        </li>
+        <li class="slide">
+            <h3>Deferred 对象简单实现</h3>
+        </li>
+        <li class="slide">
+            <h3>一些改进方向</h3>
+        </li>
+    </ol>
+</div>
+
+<div class="slide" id="whats-deferred">
+    <h2>什么是 Deferred</h2>
+    <p>Deferred（又叫做 Promise/Future）是异步编程的一种模式。promise 代表一个异步操作，可接受一个或多个回调函数，待异步操作结束后，这些回调函数会以异步操作的结果值为参数值调用。</p>
+    <p>这有点像我们熟悉的事件注册机制，只是这里的“事件”只会被触发一次，而且触发后再绑定回调函数，回调函数也会立刻执行并收到“事件触发”时的值。</p>
+    <p>通过一些 helper functions，可以对异步操作方便地对多个异步操作进行多种方式的组合。带来一种编程方式的转换，不必写出回调函数层层嵌套代码，比如……</p>
+</div>
+
+<div class="slide" id="many-callback">
+    <h2>让人很想吐槽的一段代码</h2>
+    <img src="mongodb.png" alt="node-mongodb-native/examples/blog.js">
+    <p>来自 
+    <a href="https://github.com/christkv/node-mongodb-native/blob/master/examples/blog.js">https://github.com/christkv/node-mongodb-native/blob/master/examples/blog.js</a></p>
+</div>
+
+<div class="slide" id="start">
+    <h2>开始动手实现 Deferred</h2>
+    <p>假设有这样一个耗时的异步操作（我们用 setTimeout 来模拟）：</p>
+    <pre><code>var sayHelloLater = function ( callback ) {
+    setTimeout( function () {
+        callback('Hello, World!');
+    }, 1000);
+}</code></pre>
+    <pre><code>sayHelloLater( console.log ); //1秒后在控制台输出 Hello, World!</code></pre>
+    <p style="font-size:75%;opacity:0.5">注：这只是个简单的演示，因为 console.log 函数实现不同，此行代码在 Firefox 和 node 下可用，Chrome 下不可用</p>
+    <p>我们该怎样从这个最简单的具体的例子进行抽象，把它变成一种通用模式？</p>
+</div>
+
+<div class="slide" id="promise">
+    <h2>引入 Promise</h2>
+    <p>考虑这样一种方式：不一定在执行异步操作时就需要收到指定函数。异步函数可以返回一个对象，由它来接受回调函数。</p>
+    <p>这个返回的对象就叫做 Promise（是 Deferred 的一部分）。</p>
+    <pre><code>var sayHelloLater = function () {
+    var callback;
+    setTimeout( function () {
+        callback('Hello, World!');
+    }, 1000);
+    return {
+        then: function ( _callback ) {
+            callback = _callback;
+        }
+    }
+}</code></pre>
+    <pre><code>sayHelloLater().then( console.log );</code></pre>
+</div>
+
+<div class="slide">
+    <h2>这样做有两个问题</h2>
+    <pre><code>var sayHelloLater = function () {
+    var callback;
+    setTimeout( function () {
+        callback('Hello, World!');
+    }, 1000);<span class="slide"> // 1. 回调函数必须在异步操作完成前指定</span>
+    return {
+        then: function ( _callback ) {
+            callback = _callback;<span class="slide"> // 2. 如果回调函数指定多个，仅最后一个可用</span>
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="slide">
+    <h2>引入一个队列，把回调函数 Hold 住</h2>
+    <pre><code class="with-highlight">var sayHelloLater = function () {
+    var <span class="highlight">queue = [], value, i, </span>callback;
+    setTimeout(function () {
+        value = 'Hello, World!';
+        <span class="highlight">for ( i = -1; callback = queue[++i]; ) {
+            callback( value );
+        }
+        queue = undefined;</span>
+    }, 1000);
+    return {
+        then: function ( callback ) {
+            <span class="highlight">if ( queue ) {
+                queue.push( callback );
+            } else {
+                callback( value );
+            }</span>
+        }
+    };
+};</code></pre>
+</div>
+
+<div class="slide">
+    <h2>最简单的 Deferred 实现</h2>
+    <p>接下来，我们可以把 value 的设置抽象出来。这样得到一个最简单的 Deferred 实现。</p>
+    <pre><code class="with-highlight">var defer = function () {
+    var queue = [], value, i, callback;
+    return {
+        <span class="highlight">resolve: function ( _value ) {</span>
+            value = _value;
+            for ( i = -1; callback = queue[++i]; ) {
+                callback( value );
+            }
+            queue = undefined;
+        <span class="highlight">},</span>
+        then: function ( _callback ) {
+            if ( queue ) {
+                queue.push( _callback );
+            } else {
+                callback( value );
+            }
+        }
+    };
+};</code></pre>
+</div>
+
+<div class="slide">
+    <h2>sayHelloLater() 用 Deferred 实现</h2>
+    <pre><code>var sayHelloLater = function () {
+    var dHello = defer();
+    setTimeout( funtion () {
+        dHello.resolve('Hello, World!');
+    }, 1000);
+    return dHello;
+};</code></pre>
+    <pre><code>sayHelloLater().then( console.log );</code></pre>
+</div>
+
+<div class="slide">
+    <h2>独立区分出 Promise</h2>
+    <pre><code class="with-highlight">var defer = function () {
+    var queue = [], value, i, callback;
+    return {
+        resolve: function ( _value ) {
+            //...
+        },
+        <span class="highlight">promise: {</span>
+            then: function ( _callback ) {
+                if ( queue ) {
+                    queue.push( _callback );
+                } else {
+                    callback( value );
+                }
+            }
+        <span class="highlight">}</span>
+    };
+};</code></pre>
+    <p>一般来说，所谓的 Deferred 就由 resolver 和 promise 两部分组成。</p>
+</div>
+
+<div class="slide">
+    <h2>sayHelloLater() 更新</h2>
+    <pre><code class="with-highlight">var sayHelloLater = function () {
+    var pHello = defer();
+    setTimeout( funtion () {
+        pHello.resolve('Hello, World!');
+    }, 1000);
+    return <span class="highlight">pHello.promise</span>;
+};</code></pre>
+    <pre><code>sayHelloLater().then( console.log );</code></pre>
+    <p>独立出 promise 的好处得以体现：sayHelloLater() 只需返回 promise 即可，这个 promise 只可由 sayHelloLater() 内部来 resolve。</p>
+</div>
+
+<div class="slide">
+    <h2>判断 promise</h2>
+    <p>另一个好处是，我们可以判断一个对象是否是 promise。</p>
+    <pre><code>var isPromise = function ( value ) {
+    return value && typeof value.then == 'function';
+};</code></pre>
+    <p>然后，把普通值也转成 promise。这样做的好处后面会讲到。</p>
+    <pre><code>var ref = function ( value ) {
+    if isPromise( value ) {
+        return value;
+    } else {
+        return {
+            then: function ( callback ) {
+                callback( value );
+            }
+        }
+    }
+};</code></pre>
+</div>
+
+<div class="slide">
+    <h2>promise 如何结合？</h2>
+    <p>如果我们有 pA 和 pB 两个 promise，如何在他们都 resolved 的时候将他们的值结合操作？</p>
+    <div class="slide">
+        <p>比如说，pA、pB 是两个数字，我们想把这两个数字相加。要是能这么写就好了：</p>
+        <pre><code>var pC = pA.then( function ( a ) {
+    return pB.then( function ( b ) {
+        return a + b;
+    });
+});</code></pre>
+    </div>
+    <div class="slide">
+        <p>由于 pC 依赖于另外的 promise，所以它也得是个 promise：</p>
+        <pre><code>pC.then( function ( c ) {
+    console.log( c );
+});</code></pre>
+    </div>
+    <p class="slide">这里进一步体现了用 promise 代替 value 的思想。</p>
+    <p class="slide">通过 promise 这一层抽象，我们不必再考虑异步操作的结果是否已返回。要获得 value，只要调用 promise 对象的 then 方法即可。</p>
+</div>
+
+<div class="slide">
+    <h2>详细分析一下</h2>
+    <pre><code>var pC = pA.then( function ( a ) {
+    return pB.then( function ( b ) {
+        return a + b;
+    });
+});</code></pre>
+    <h3 class="slide">实现此 then 方法需要做到</h3>
+    <ol>
+        <li class="slide">一个 promise (pA) 的 then 方法可以返回一个新的 promise (pC)，在原 promise (pA) 被 resolve 的时候，新 promise (pC) 也会被 resolve。</li>
+        <li class="slide">新 promise (pC) 的 resolve 值是回调函数的返回值。</li>
+        <li class="slide">这个新的返回值可以是普通值，也可以是 promise，但最终 then 方法返回的是一个 promise。如果是普通值，会被转成一个 promise。</li>
+    </ol>
+</div>
+
+<div class="slide">
+    <h2>具体说来</h2>
+    <p>以上代码相当于：</p>
+    <pre><code>var pC = pA.then( function ( a ) { //这个回调函数记为 aThen
+    var _pC = pB.then( function ( b ) { //这个回调函数记为 bThen
+        return a + b;
+    });
+    return _pC;
+});</code></pre>
+    <ol>
+        <li class="slide">pB.then() 的回调函数返回了普通值 a + b，pB.then() 的返回值是 a+b 转成的 promise。我们记为 _pC。</li>
+        <li class="slide">_pC 又是 pA.then() 的回调函数的返回值，pA.then() 直接返回这个 promise。</li>
+        <li class="slide">当 pB 先被 resolve，pA 还未被 resolve 时，回调函数 aThen 还未被执行，所以 bThen 还未被加到 pB 上；之后 pA 被 resolve 后，执行 aThen，bThen 被加到 pB 上，由于 pB 已被 resolve，立即执行并返回 a+b 转成的 promise，之后又作为 pA.then() 的返回值。</li>
+        <li class="slide">当 pA 先被 resolve，pB 还未被 resolve 时，pA.then() 返回的 _pC 是一个未被 resolve 的 promise，这个 promise 的 resolve 状态和 pB 一致。</li>
+        <li class="slide">因此，虽然回调函数是嵌套编写，但背后的异步操作是同步执行。</li>
+    </ol>
+</div>
+
+<div class="slide">
+    <h2>还记得 ref() 函数吗？</h2>
+    <p>让普通值变成 promise 的 ref() 函数，在这里排上用场了。</p>
+    <pre><code>var ref = function ( value ) {
+    if isPromise( value ) {
+        return value;
+    } else {
+        return {
+            then: function ( callback ) {
+                callback( value );
+            }
+        }
+    }
+};</code></pre>
+</div>
+
+<div class="slide">
+    <h2>还记得 ref() 函数吗？</h2>
+    <p>应该确保 ref() 生成的 promise 的 then 方法也返回 promise。</p>
+    <pre><code class="with-highlight">var ref = function ( value ) {
+    if isPromise( value ) {
+        return value;
+    } else {
+        return {
+            then: function ( callback ) {
+                <span class="highlight">return ref( callback( value ));</span>
+            }
+        }
+    }
+};</code></pre>
+</div>
+
+<div class="slide">
+    <h2>更新 defer()</h2>
+    <p>resolve() 方法的更新是简单的，只要把 value 改成 promise 来存储：</p>
+    <pre><code class="with-highlight">//...
+resolve: function ( _value ) {
+    <span class="highlight">value = ref( _value );</span>
+    for ( i = -1; callback = queue[++i]; ) {
+        <span class="highlight">value.then( callback );</span>
+    }
+    queue = undefined;
+},
+//...</code></pre>
+    <p class="slide">同时要注意，现在 resolve() 方法已经可以接受还未 resolve 的 promise 了。</p>
+</div>
+
+<div class="slide">
+    <h2>更新 defer()</h2>
+    <p>promise.then() 方法的更新要考虑两件事：一是即便此 promise 已经被 resolve 了，其 value 也可能是一个未被 resolve 的 promise；二是 promise.then() 需要返回一个 promise。这两个问题都可通过新建一个 deferred 对象解决：</p>
+    <pre><code class="with-highlight">//...
+promise: {
+    then: function ( _callback ) {
+        <span class="highlight">var d = defer(),
+            callbackWrap = function ( _value ) {
+                d.resolve( _callback( _value ));
+            };</span>
+        if ( queue ) {
+            queue.push( callbackWrap );
+        } else {
+            <span class="highlight">value.then( callbackWrap );</span>
+        }
+        <span class="highlight">return d.promise;</span>
+    }
+}
+//...</code></pre>
+</div>
+
+<div class="slide">
+    <h2>最终结果</h2>
+    <pre><code style="line-height: 1em">var defer = function () {
+    var queue = [], value, i, callback;
+    return {
+        resolve: function ( _value ) {
+            <span class="highlight">value = ref( _value );</span>
+            for ( i = -1; callback = queue[++i]; ) {
+                <span class="highlight">value.then( callback );</span>
+            }
+            queue = undefined;
+        },
+        promise: {
+            then: function ( _callback ) {
+                var d = defer(),
+                    callbackWrap = function ( _value ) {
+                        d.resolve( _callback( _value ));
+                    };
+                if ( queue ) {
+                    queue.push( callbackWrap );
+                } else {
+                    value.then( callbackWrap );
+                }
+                return d.promise;
+            } } }</code></pre>
+</div>
+
+<div class="slide">
+    <h2>改进空间</h2>
+    <p>我们对 Deferred 对象的改进就到此为止（再长就无法写进 Slides 了）。我们目前的 Deferred 对象已经满足了核心功能，但是，离一个健壮的模块还有很大距离。需要考虑的地方有：</p>
+    <ol>
+        <li class="slide">对多次 resolve 的错误处理：是 silent fail，还是抛出异常。</li>
+        <li class="slide">对错误情况的处理。增加 reject 方法，并且 resolve/reject 两个接口相互排斥。和 resolve 情况类似，也维护一个错误回调的 queue，then 方法改为接受两个参数 then( callback, errback )</li>
+        <li class="slide">增加 try/catch，在 callback 中遇到异常则状态变为 reject</li>
+        <li class="slide">让 callback 在下一个 event loop 执行，避免立即触发的回调函数出现变量未定义的错误。</li>
+        <li class="slide">等等</li>
+        <li class="slide">参考 <a href="https://github.com/kriskowal/q">https://github.com/kriskowal/q</a><br />
+        ——本次分享实现的 defer() 出自于此，里面的 
+        <a href="https://github.com/kriskowal/k/blob/master/design/README.js"></a>design/README.js 文件值得耐心研读，我这里只讲了这篇文章内容的一半不到。</li>
+    </ol>
+</div>
+
+<div class="slide">
+    <h2>API 设计</h2>
+    <p>也可以设计实现一些方便好用的 API：</p>
+    <ol>
+        <li class="slide">when()/all() - 将多个 promise 合并为一个 promise，只有在这些 promise 都完成的时候，这个新 promise 才完成，并统一获取所有值进行处理。</li>
+        <li class="slide">or() - 多个 promise，只取第一个返回值的结果。</li>
+        <li class="slide">a2p() - async to promise 把异步函数变成 promise。如 pUserInfo = a2p($.get, '/api/v1/userinfo/');</li>
+    </ol>
+</div>
+
+<div class="slide">
+    <h2>Thanks / Any Questions</h2>
+    <ul>
+        <li>谢谢大家的聆听</li>
+        <li>感谢 Kris Kowal 的文章，我的此次演讲基本上是对他文章的复述讲解</li>
+        <li>这个 Slides 基于 Deck.js 制作，感谢其作者 Caleb</li>
+    </ul>
+    <h3>参考</h3>
+    <ul>
+        <li><a href="https://github.com/kriskowal/q">https://github.com/kriskowal/q</a></li>
+        <li><a href="https://github.com/medikoo/deferred">https://github.com/medikoo/deferred</a></li>
+        <li><a href="https://github.com/coolaj86/futures">https://github.com/coolaj86/futures</a></li>
+        <li>关于 jQuery.Deferred，请 google 阮一峰的日志《<a href="http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html">jQuery的Deferred对象详解</a>》</li>
+    </ul>
+    <h3>联系讲者</h3>
+    <ul>
+        <li>果壳网 王宇（宇蠢Yuest）</li>
+        <li><a href="http://yue.st/">http://yue.st/</a></li>
+        <li>yuestwang at gmail dot com</li>
+    </ul>
+</div>
+
+<p class="deck-status">
+    g: 跳转 m：预览全部 上下左右：翻页
+    <span class="deck-status-current"></span>
+    /
+    <span class="deck-status-total"></span>
+</p>
+
+<form action="." method="get" class="goto-form">
+    <label for="goto-slide">Go to slide:</label>
+    <input type="number" name="slidenum" id="goto-slide">
+    <input type="submit" value="Go">
+</form>
+
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<script src="/slides/deckjs/jquery-1.7.min.js"></script>
+
+<!-- Deck Core and extensions -->
+<script src="/slides/deckjs/core/deck.core.js"></script>
+<script src="/slides/deckjs/extensions/menu/deck.menu.js"></script>
+<script src="/slides/deckjs/extensions/goto/deck.goto.js"></script>
+<script src="/slides/deckjs/extensions/status/deck.status.js"></script>
+<script src="/slides/deckjs/extensions/hash/deck.hash.js"></script>
+<script>
+$(function() {
+    // Deck initialization
+    $.deck('.slide');
+});
+</script>
+
+
+</body>
+</html>
