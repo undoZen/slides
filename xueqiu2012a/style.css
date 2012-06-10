@@ -1,0 +1,287 @@
+html, .view body { background-color: white; counter-reset: slideidx; }
+body, .view section {
+    font-family: 'Expletus Sans', 'WenQuanYi Zen Hei', 'MicroSoft Yahei', arial, serif;
+  background-color: #0055A2;
+  border-radius: 12px;
+  color: white;
+  text-shadow: 0px 1px #000;
+}
+/* A section is a slide. It's size is 800x600, and this will never change */
+section, .view head > title {
+    /* The font from Google */
+    font-size: 30px;
+}
+
+.pre,
+pre {
+    font-family: 'Ubuntu Mono', monospace;
+}
+pre {
+    font-size: 24px;
+    margin: 25px;
+}
+
+.view section:after {
+  counter-increment: slideidx;
+  content: counter(slideidx, decimal-leading-zero);
+  position: absolute; bottom: -80px; right: 100px;
+  color: white;
+}
+
+.view head > title {
+  color: white;
+  text-align: center;
+  margin: 1em 0 1em 0;
+}
+
+
+h1, h2 {
+  margin-top: 200px;
+  text-align: center;
+  font-size: 60px;
+}
+h2 {
+  margin-top: 100px;
+}
+.preheading {
+    font-size: 30px;
+    margin-top: 200px;
+    text-align: center;
+}
+.preheading + h1 {
+    margin-top: 00px;
+}
+h1.top {
+    margin: 30px 0 0 20px;
+    text-align: left;
+    font-size: 40px;
+}
+h3 {
+  margin: 100px 0 50px 75px;
+  font-size: 60px;
+}
+.api-needs h3 {
+    margin: 30px 0 0 20px;
+    text-align: left;
+    font-size: 30px;
+}
+
+ol,
+ul {
+    margin: 50px 160px;
+}
+li {
+    margin: 20px 0;
+}
+p {
+  margin: 60px 75px;
+  font-size: 40px;
+}
+
+blockquote {
+  height: 100%;
+  background-color: black;
+  color: white;
+  font-size: 60px;
+  padding: 40px;
+}
+blockquote:before {
+  content: open-quote;
+}
+blockquote:after {
+  content: close-quote;
+}
+
+/* Figures are displayed full-page, with the caption
+   on top of the image/video */
+figure {
+  background-color: black;
+}
+figcaption {
+  margin: 70px;
+  font-size: 40px;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 40px;
+  text-align: right;
+  background-color: #3377b5;
+  border-top: 1px solid #CCC;
+}
+
+/* Transition effect */
+/* Feel free to change the transition effect for original
+   animations. See here:
+   https://developer.mozilla.org/en/CSS/CSS_transitions
+   How to use CSS3 Transitions: */
+section {
+  /*
+  -moz-transition: left 400ms linear 0s;
+  -webkit-transition: left 400ms linear 0s;
+  -ms-transition: left 400ms linear 0s;
+  transition: left 400ms linear 0s;
+  */
+}
+.view section {
+  -moz-transition: none;
+  -webkit-transition: none;
+  -ms-transition: none;
+  transition: none;
+}
+
+.view section[aria-selected] {
+  border: 5px red solid;
+}
+
+/* Before */
+section { left: -150%; }
+/* Now */
+section[aria-selected] { left: 0; }
+/* After */
+section[aria-selected] ~ section { left: +150%; }
+
+/* Incremental elements */
+
+/* By default, visible */
+.incremental > * { opacity: 1; }
+
+/* The current item */
+.incremental > *[aria-selected] { opacity: 1; }
+
+/* The items to-be-selected */
+.incremental > *[aria-selected] ~ * { opacity: 0; }
+
+/* The progressbar, at the bottom of the slides, show the global
+   progress of the presentation. */
+#progress-bar {
+  height: 2px;
+  background: #AAA;
+}
+
+
+* { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+details { display: none; }
+body {
+  width: 800px; height: 600px;
+  margin-left: -400px; margin-top: -300px;
+  position: absolute; top: 50%; left: 50%;
+  overflow: hidden;
+  display: none;
+}
+.view body {
+  position: static;
+  margin: 0; padding: 0;
+  width: 100%; height: 100%;
+  display: inline-block;
+  overflow: visible; overflow-x: hidden;
+  /* undo Dz.onresize */
+  transform: none !important;
+  -moz-transform: none !important;
+  -webkit-transform: none !important;
+  -o-transform: none !important;
+  -ms-transform: none !important;
+}
+.view head, .view head > title { display: block }
+section {
+  position: absolute;
+  pointer-events: none;
+  width: 100%; height: 100%;
+}
+.view section {
+  pointer-events: auto;
+  position: static;
+  width: 800px; height: 600px;
+  margin: -150px -200px;
+  float: left;
+
+  transform: scale(.4);
+  -moz-transform: scale(.4);
+  -webkit-transform: scale(.4);
+  -o-transform: scale(.4);
+  -ms-transform: scale(.4);
+}
+.view section > * { pointer-events: none; }
+section[aria-selected] { pointer-events: auto; }
+html { overflow: hidden; }
+html.view { overflow: visible; }
+body.loaded { display: block; }
+.incremental {visibility: hidden; }
+.incremental[active] {visibility: visible; }
+#progress-bar{
+  bottom: 0;
+  position: absolute;
+  -moz-transition: width 400ms linear 0s;
+  -webkit-transition: width 400ms linear 0s;
+  -ms-transition: width 400ms linear 0s;
+  transition: width 400ms linear 0s;
+}
+.view #progress-bar {
+  display: none;
+}
+figure {
+  width: 100%;
+  height: 100%;
+}
+figure > * {
+  position: absolute;
+}
+figure > img, figure > video {
+  width: 100%; height: 100%;
+}
+
+#again h1 {
+  position: absolute;
+  top: 20px;
+  left: 70px;
+}
+#again p {
+  margin: 70px;
+}
+#upgrade ol {
+    margin: 80px 140px;
+}
+#upgrade ol li {
+    margin: 30px 0;
+}
+.cluster pre {
+    font-size: 22px;
+}
+.api-impl pre {
+    font-size: 18px;
+}
+
+#cover .nodelogo {
+    position: relative;
+    top: 15px;
+}
+#cover .xueqiulogo {
+    position: relative;
+    top: 30px;
+}
+#why p {
+  position: absolute;
+  top: 300px;
+  right: 20px;
+}
+#what p {
+  font-size: 32px;
+}
+#do-dont h3 {
+  font-size: 40px;
+  margin: 40px 60px 10px;
+}
+#do-dont h4 {
+  font-size: 30px;
+  margin: 20px 60px 10px;
+}
+#do-dont ul {
+  font-size: 30px;
+  margin: 60px 100px 10px;
+}
+
+#dep-compare pre {
+  font-size: 20px;
+}

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>Node.js 雪球实战半年谈</title>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Expletus+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="style.css" type="text/css" media="all" />
+<script src="script.js" type="text/javascript"></script>
+
+<section>
+<h1 id=cover>
+  <img class=nodelogo src="img/nodejs.gif" /><img class=xueqiulogo src="img/xueqiu.png" />实战半年谈</h1>
+    <footer>王宇 (@)yue(.)st</footer>
+</section>
+
+<section>
+    <h3>Contents</h3>
+    <ol>
+      <li>About Node.js &amp; Xueqiu.com
+      <li>Node on Xueqiu Half Yeah Review<br>&nbsp;&nbsp;(2011.12 ~ 2012.05)
+      <li>Besides Coding
+    </ol>
+    <details>Some notes. They are only visible using onstage shell.</details>
+</section>
+
+<section>
+<div class="preheading">Part 1</div>
+    <h1>About Xueqiu.com</h1>
+</section>
+
+<section>
+  <blockquote>不知道雪球在用Node.js？你。。。你。。。你是社区新人吧</blockquote>
+</section>
+
+<section id=why>
+  <blockquote>不知道雪球在用Node.js？你。。。你。。。你是社区新人吧</blockquote>
+  <p>为什么这么说？</p>
+</section>
+
+<section>
+    <figure>
+      <img src="img/mengxy1.jpg">
+      <figcaption>@mengxy at NodeParty 2011.07</figcaption>
+    </figure>
+</section>
+
+<section>
+    <figure>
+      <img src="img/mengxy2.jpg">
+      <figcaption>@mengxy at NodeParty 2011.12</figcaption>
+    </figure>
+</section>
+
+<section id=again>
+    <p> @yuest at NodeParty 2012.06 </p>
+    <h1>Here we are, again.</h1>
+</section>
+
+<section>
+    <h1>有没有让你想到……</h1>
+</section>
+
+<section>
+    <h1>另一家有理想的公司</h1>
+</section>
+
+<section>
+    <figure>
+      <img src="img/jobs.jpg">
+      <figcaption>乔布斯<br>和苹果公司每年一次的 WWDC</figcaption>
+    </figure>
+</section>
+
+<section>
+    <h1>或另一个有理想的人</h1>
+</section>
+
+<section>
+    <figure>
+      <img src="img/lobs.jpg">
+      <figcaption>罗布斯<br>每年一次的理想主义者奋斗史演讲</figcaption>
+    </figure>
+    <details>不过我们并没有那么大名气，努力中。</details>
+</section>
+
+<section id=what>
+<h2><img class=xueqiulogo src="img/xueqiu.png" /></h2>
+<p>全球化的投资交流平台，给投资者提供跨市场、跨品种的数据查询、新闻订阅和互动交流服务，目前已覆盖A股、港股、美股市场。</p>
+<p>“价值投资通往财务自由”</p>
+<details>我们也是有理想有态度的公司。</details>
+</section>
+
+<section>
+<p>雪球 xueqiu.com 是国内少有的将 Node.js 用作生产环境的公司之一</p>
+<p>我们会保持技术探索和实践</p>
+<p>并将实战经验回馈开源社区</p>
+</section>
+
+<section>
+<h2>Node.js</h2>
+<p>Evented I/O for JavaScript.</p>
+<p>Proved server-side JavaScript could do great.</p>
+</section>
+
+<section>
+<h2>FAQ</h2>
+<p>Question：你们用 node 写后端？</p>
+<p>Answer：No. node 只有前端团队在用。后端用 Java。</p>
+</section>
+
+<section>
+<h2>前端在雪球</h2>
+<p>“大前端”：面向用户的工程师</p>
+<p>目标：看得舒服 用的方便 访问快速</p>
+</section>
+
+<section>
+<h3>需求与技术</h3>
+<ul class="incremental">
+  <li>看得舒服: HTML/CSS</li>
+  <li>用的方便: client-side JS</li>
+  <li>访问快速: 高效率生成 HTML 等 - server-side JS</li>
+  <li>开发方便迅捷: 合理架构、方便的辅助程序 - server-side JS</li>
+</ul>
+</section>
+
+<section id=do-dont>
+<h3>我们用 node 做什么</h3>
+<ul class="incremental">
+  <li>处理浏览器请求（Express）</li>
+  <li>获取后端数据（http module）</li>
+  <li>生成 HTML（Jade）</li>
+  <li>开发调试环境（assets）</li>
+  <li>静态文件部署工具（assets、spm、uglify、squash）</li>
+</ul>
+</section>
+<section id=do-dont>
+<h3>我们不用 node 做什么</h3>
+<ul class="incremental">
+  <li>数据处理
+    <br>&nbsp;&nbsp;后端 JSON 格式 API 支持
+    <br>&nbsp;&nbsp;页面上 client-side JS 直接请求后端 API</li>
+  <li>身份验证
+    <br>&nbsp;&nbsp;几乎每个 req 都请求 checkLogin 接口</li>
+  <li style="list-style: none; margin-top: 40px">只把 node 用在最合适的地方：如何让前端做的更好，包括产出和过程。</li>
+</ul>
+</section>
+
+<section>
+<h2>Node Modules</h2>
+<ul>
+  <li>Express 2.5.x</li>
+  <li>jade</li>
+  <li>eventproxy</li>
+  <li>node-cluster</li>
+  <li>connect-assets</li>
+</ul>
+</section>
+
+<section>
+  <div class="preheading">Part 2</div>
+  <h1>Half Year Review</h1>
+</section>
+
+<section id=upgrade>
+<ol>
+  <li>0.4 upgrade to 0.6
+  <br>&nbsp;&nbsp;cluster: tj's -&gt; aleafs'
+  <br>&nbsp;&nbsp;api request: mikeal's -&gt; yuest's
+  <br>&nbsp;&nbsp;remove session (proxy to backend)</li>
+  <li>developer experience improved
+  <br>&nbsp;&nbsp;develop environment
+  <br>&nbsp;&nbsp;bootstrap
+  <br>&nbsp;&nbsp;connect-assets
+  <br>&nbsp;&nbsp;seajs
+  <br>&nbsp;&nbsp;client-side jade</li>
+</ol>
+</section>
+
+<section>
+  <h1>Upgrade to 0.6</h1>
+</section>
+
+<section>
+<h1 class=top>cluster: tj's -&gt; aleafs'</h1>
+<ol>
+  <li>tj's module name conflicts with 0.6 build-in module</li>
+  <li>aleafs' supports seamless restart</li>
+</ol>
+</section>
+
+<section class="cluster">
+<h1 class=top>cluster: tj's -&gt; aleafs'</h1>
+<pre><code>//server.js
+fs.writeFileSync(pidsDir+'/master.pid', process.pid)
+var master = new cluster.Master()
+master.register(1234, './current/app.js', { cnum: forkNum })
+master.dispatch()
+</code></pre>
+<pre><code>//app.js
+if (process.hasOwnProperty('send')) {
+  require('node-cluster').ready(function(socket) {
+    app.emit('connection', socket)
+  })
+}
+</code></pre>
+<pre><code>//seamless restart
+kill -s USR1 `cat $PIDSDIR/master.pid` #sh
+kill -s SIGUSR1 `cat $PIDSDIR/master.pid` #bash
+</code></pre>
+</section>
+
+<section class=api-needs>
+<h1 class=top>api request: needs</h1>
+<h3>before</h3>
+<pre><code>r = snowball(req)
+r.Request(CONFIG.Domain.base + path, data, ...
+</code></pre>
+<h3>I want to type less</h3>
+<pre><code>req.api()?
+req.api('base', path, data, ... ?
+</code></pre>
+<h3>finally</h3>
+<pre><code>req.api.base(path, data, ...
+</code></pre>
+</section>
+
+<section class=api-impl>
+<h1 class=top>api request: implementation</h1>
+<pre><code>function Api (req) {
+  this.req = req
+}
+
+Api.prototype.request = function(url/*, ...*/) { /*...*/ }
+
+Object.keys(CONFIG.Domain).forEach(function(domain) {
+  Api.prototype[domain] = function(path/*, ...*/) {
+    this.request(CONFIG.Domain[domain] + path/*, ...*/)
+  }
+})
+
+//req.api().base(path, ...)
+http.IncomingMessage.prototype.api = function() {
+  return this._api || (this._api = new Api(this))
+}
+</code></pre>
+</section>
+
+<section class=api-impl>
+<h1 class=top>api request: implementation</h1>
+<pre><code>function Api (req) {
+  this.req = req
+}
+
+Api.prototype.request = function(url/*, ...*/) { /*...*/ }
+
+Object.keys(CONFIG.Domain).forEach(function(domain) {
+  Api.prototype[domain] = function(path/*, ...*/) {
+    this.request(CONFIG.Domain[domain] + path/*, ...*/)
+  }
+})
+
+//req.api.base(path, ...)
+http.IncomingMessage.prototype.__defineGetter__('api', function() {
+  return this._api || (this._api = new Api(this))
+})
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>simplest proxy server in node.js</h1>
+<pre><code>http.createServer(function(req, res) {
+  http.request({
+    hostname: CONFIG.proxyHost
+    , path: req.url
+    , method: req.method
+    , port: CONFIG.proxyPort
+    , headers: req.headers
+  }, function(_res) {
+    res.statusCode = _res.statusCode
+    Object.keys(_res.headers).forEach(function(name){
+      res.setHeader(name, _res.headers[name])
+    }
+    _res.pipe(res)
+  })
+}).listen(8080)
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>api request: implementation</h1>
+<pre><code>res.on('data', function(data) {
+  buffers.push(data)
+  len += data.length
+})
+res.on('end', function() {
+  var body = new Buffer(len)
+    , i = 0
+  buffers.forEach(function (buffer) {
+    buffer.copy(body, i, 0, buffer.length)
+    i += buffer.length
+  })
+  callback(null, body.toString('utf8'))
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Develop Environment</h1>
+</section>
+
+<section class=api-impl>
+<h1 class=top>dev.js</h1>
+<pre><code>if (needApiProxy) { // 通过比如 req.url 以 'json' 结尾来判断
+  // ...
+  needHostAdjust = headers.host != 'xueqiu.com'
+  if (needHostAdjust) {
+    if (isApiRequest) {
+      headers.host = 'api.xueqiu.com'
+    } else {
+      headers.host = 'xueqiu.com'
+    }
+  }
+  // http.request(...
+    Object.keys(_res.headers).forEach(function(name) {
+      if ('set-cookie' === name && needHostAdjust) {
+        var _headers = _res.headers[name].map(function(cookie) {
+          return cookie.replace(/\sdomain=[^\s$]*/gi, '')
+        })
+        res.setHeader(name, _headers)
+      } else {
+        res.setHeader(name, _res.headers[name])
+      }
+    })
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>principle</h1>
+<ul class=incremental>
+  <li>develop environment:
+  <br>&nbsp;&nbsp;拆分成小文件
+  <br>&nbsp;&nbsp;不压缩
+  <br>&nbsp;&nbsp;自动解决依赖，直接引入小文件
+  </li>
+  <li>production environment:
+  <br>&nbsp;&nbsp;自动解决依赖
+  <br>&nbsp;&nbsp;合并依赖文件
+  <br>&nbsp;&nbsp;压缩
+  <br>&nbsp;&nbsp;生成线上版本静态文件
+  </li>
+</ul>
+</section>
+
+<section>
+<h1>Bootstrap</h1>
+</section>
+
+<section>
+<h1 class=top>bootstrap</h1>
+<pre><code>1a. add bootstrap as a dependency in package.json
+  "bootstrap":
+  "https://github.com/xueqiu/bootstrap/tarball/master"
+
+1b. add bootstrap as a submodule
+  git submodule add \
+  https://github.com/xueqiu/bootstrap.git \
+  submodules/bootstrap
+
+2. cp node_modules/bootstrap/less/bootstrap.less \
+        static/style
+
+3. modify @import path, for example:
+
+@import "../../node_modules/bootstrap/less/reset.less";
+
+4.lessc command or connect-assets
+</code></pre>
+</section>
+
+<section>
+<h1>connect-assets</h1>
+</section>
+
+<section>
+<h1 class=top>connect-assets</h1>
+<pre><code>1. install using npm, in package.json:
+dependencies: { "connect-assets": "latest" }
+
+2. var assets = require('connect-assets')
+
+3. app.use(assets({ src: 'static' })
+// 默认 src: 'assets'
+
+4. css.root = 'style'
+// 默认 css.root = 'style'
+
+5. in x.jade:
+html
+  head
+    != css('bootstrap.css')
+    // 寻找 static/style/bootstrap.{css,less,styl}
+    != js('bootstrap.js')
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>connect-assets</h1>
+<ul class=incremental>
+  <li>符合前面说的原则</li>
+  <li>开发环境作为直接 serve 静态文件</li>
+  <li>生产环境构建到某一指定目录</li>
+  <li>自动为文件名加版本号</li>
+  <li>自动解决 css 里引用图片的版本号</li>
+  <li>css 依赖靠 less/stylus 解决</li>
+  <li>提供一个简单的 JS 依赖解决方案</li>
+</ul>
+</section>
+
+<section>
+<h1 class=top>connect-assets resolve JS dependency</h1>
+<pre><code>1. static/js/bootstrap.js
+//= require bootstrap/bootstrap-modal.js
+2. in x.jade:
+!= js('bootstrap.js')
+</code></pre>
+<img src="img/localhost.png" alt="" style="margin: 0 30px"/>
+<img src="img/online.png" alt="" />
+</section>
+
+<section>
+<h1>sea.js</h1>
+</section>
+
+<section id=dep-compare>
+<h1 class=top>resolve JS dependency: assets vs. seajs</h1>
+<pre style="float: left"><code>//connect-assets
+
+//a.js
+window.a = 2
+
+//b.js
+window.a = 1
+//= require a.js
+console.log(window.a)
+
+//actual execution
+window.a = 2 //a.js
+window.a = 1 //b.js
+console.log(window.a)
+</code></pre>
+<pre style="float: left"><code>//seajs
+
+//a.js
+define(function(){
+  window.a = 2
+})
+
+//b.js
+define(function(require){
+  window.a = 1
+  require('a')
+  console.log(window.a)
+})
+
+//html
+//&lt;script&gt;seajs.use('b')&lt;/script&gt;
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>spm</h1>
+<pre><code>npm install spm -g
+spm build srcdir --combine --app_url './'
+
+// use spm as a node module
+new require('spm').Build([srcdir], {
+    combine: true
+  , app_url: './'
+  , out_path: destdir
+  , compiler_options: { ascii_only: true }
+}).run()
+</code></pre>
+</section>
+
+<section>
+<h1>client jade</h1>
+</section>
+
+<section>
+<h1 class=top>client jade</h1>
+<pre><code>console.log(jade.compile('p#hello hello, world!', {
+    client: true
+  , compileDebug: false }).toString())
+
+function anonymous(locals, attrs, escape, rethrow) {
+var attrs = jade.attrs, escape = jade.escape, 
+    rethrow = jade.rethrow;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('&lt;p');
+buf.push(attrs({ 'id':('hello') }));
+buf.push('&gt;hello, world!&lt;/p&gt;');
+}
+return buf.join("");
+}
+
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>client jade</h1>
+<pre><code>var t = 'window.Templates = {}'
+fs.readdirSync(cjdir).forEach(function(filename) {
+  var p = path.join(cjdir, filename)
+  var j = fs.readFileSync(p, 'utf8')
+  t += 'window.Templates.'+filename+'='+jade.compile(j, {
+          client: true
+        , compileDebug: false }).toString()
+})
+
+fs.writeFileSync(templatesjspath, t, 'utf8')
+</code></pre>
+</section>
+
+<section>
+<h1 class=top>client jade</h1>
+<pre><code>//provided as /js/client/test.jade.js
+'define(function(require, exports, module) {\n'
++ jade.compile(content, { client: true, ...
++ '\nmodule.exports = anonymous\n})'
+
+//test.js
+define(function (require) {
+  var tmpl = require('./client/test.jade')
+  console.log(tmpl({ name: 'World' })
+})
+
+//in html
+&lt;script&gt;seajs.use('test.js')&lt;/script&gt;
+
+//部署到生产环境 ./client/test.jade.js 会并入 test.js
+</code></pre>
+</section>
+
+<section>
+<h1>deploy static files</h1>
+</section>
+
+<section>
+<h1 class=top>deploy static files</h1>
+<ol class=incremental>
+  <li>/tmp/xueqiu-static/preprocessed/js
+  <br>&nbsp;&nbsp;generate client/*.jade.js
+  <br>&nbsp;&nbsp;compile *.coffee
+  <br>&nbsp;&nbsp;concatenate js files
+  </li>
+  <li>/tmp/xueqiu-static/compressed/js
+  <br>&nbsp;&nbsp;compile less files
+  <br>&nbsp;&nbsp;compress css files using sqwish
+  <br>&nbsp;&nbsp;compress js files using spm
+  </li>
+  <li>CONFIG.StaticDest (nginx serve)
+  <br>&nbsp;&nbsp;build by connect-assets
+  </li>
+</ol>
+</section>
+
+<section>
+<h1 class=top>next half year</h1>
+<ol class=incremental>
+  <li>UI 模块规范化</li>
+  <li>自动测试、持续集成</li>
+  <li>Express 3.0? node 0.8?</li>
+  <li>分享下半年经验</li>
+</ol>
+</section>
+
+<section>
+  <div class="preheading">Part 3</div>
+  <h1>Besides Coding</h1>
+</section>
+
+<section>
+  <h1>Everything is on its place.</h1>
+</section>
+
+<section>
+<h1>Focus on<br>what won't change.</h1>
+</section>
+
+<section>
+<h1>Embrace Wealth</h1>
+</section>
+
+<section>
+<h1><img class=xueqiulogo src="img/xueqiu.png" width=294 height=200/></h1>
+</section>
+
+<div id="progress-bar"></div>
