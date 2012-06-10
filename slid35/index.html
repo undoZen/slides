@@ -1,0 +1,493 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Slid35</title>
+  <meta name="viewport" content="width=1024" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="highlight.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Ubuntu+Mono::latin', 'Signika:600:latin', 'Shanti::latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+<style>
+</style>
+</head>
+<body>
+<div id="slid35">
+<section class="heading">
+<hgroup>
+  <h1>HTML5 on Slides</h1>
+  <h2>by (@)yue(.)st</h2>
+  <h3>watch it online -> http://yuest.slid35.com/s/slid35/ (webkit only)</h3>
+</hgroup>
+</section>
+
+<section class="heading">
+  <h1>Let's Just Start</h1;>
+</section>
+
+<section>
+  <h1>Resources</h1>
+  <ul>
+    <li>Google Webfonts: Ubuntu Mono, Signika, Shanti</li>
+    <li>jQuery 1.7.2</li>
+    <li>highlight.js</li>
+  </ul>
+  <ul>
+    <li>node.js</li>
+    <li>socket.io</li>
+  </ul>
+</section>
+
+<section>
+  <h1>Basic HTML Structure &amp; Stylesheet</h1>
+<pre style="float:left;"><code class="html">&lt;body&gt;
+&lt;div id="slid35"&gt;
+&lt;section class=&quot;heading&quot;&gt;
+&lt;hgroup&gt;
+  &lt;h1&gt;HTML5 on Slides&lt;/h1&gt;
+  &lt;h2&gt;by (@)yue(.)st&lt;/h2&gt;
+&lt;/hgroup&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;heading&quot;&gt;
+  &lt;h1&gt;Let's Just Start&lt;/h1&gt;
+&lt;/section&gt;
+
+&lt;section&gt;
+&lt;h1&gt;Basic HTML Structure&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&quot;html&quot;&gt;&amp;lt;body&amp;gt;
+...
+</code></pre>
+<pre><code class="css">#slid35 {
+    width: 800px;
+    height: 600px;
+}
+
+#slid35&gt;section {
+    clear: both;
+    display: inline-block;
+    width: 800px;
+    height: 600px;
+    margin-bottom: 50px;
+}
+</code></pre>
+<pre style="clear: both"><code class="javascript">$('#slid35&gt;section').each(function(i, section) {
+  section.id = i
+})
+</code></pre>
+</section>
+
+<section>
+  <h1>Let JavaScript Executable</h1>
+<pre><code class="javascript">hljs.initHighlightingOnLoad()
+window.slid35 = {} //namespace
+slid35.touchclick = 'ontouchstart' in window
+                    ? 'touchstart'
+                    : 'click'
+window.$slid35 = $('#slid35')
+$slid35.section = $slid35.children('section')
+window.$window = $(window)
+$('code.javascript.executable').one(slid35.touchclick, function(ev) {
+  ev.stopPropagation()
+  $(this).removeClass('executable')
+  eval('(function(){'+$(this).text()+'}())')
+})
+</code></pre>
+<pre><code class="javascript executable">$('code.css.executable').one(slid35.touchclick, function(ev) {
+  ev.stopPropagation()
+  $(this).removeClass('executable')
+  $(document.createTextNode($(this).text()))
+    .appendTo('style')
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Slide Control Functions</h1>
+<pre><code class="javascript executable">slid35.getCurrent = function() {
+  var current = location.hash.substring(2)
+  return +current || 0
+}
+slid35.getSection = function(id) {
+  id = id || slid35.getCurrent()
+  return $slid35.section.get(id)
+}
+slid35.go = function(idx) {
+  location.hash = '#s' + idx
+}
+slid35.next = function() {
+  slid35.go(slid35.getCurrent() + 1)
+}
+slid35.prev = function() {
+  slid35.go(slid35.getCurrent() - 1)
+}
+</code></pre>
+</section>
+
+<section>
+<h1>Control by Click/Tap</h1>
+<pre><code class="javascript executable">$('html')
+  .on(slid35.touchclick, function(ev) {
+    var x = 'click' === ev.type
+            ? ev.clientX
+            : ev.originalEvent.touches[0].clientX
+    x &gt; window.innerWidth/2 ? slid35.next() : slid35.prev()
+    ev.preventDefault()
+  })
+
+location.hash = '#s6'
+</code></pre>
+</section>
+
+<section>
+<h1>Control by Keyboard</h1>
+<pre><code class="javascript executable">$window.on('keydown', function(ev) {
+  var prevent = true
+  switch (ev.keyCode) {
+    case 33: // page up
+    case 37: // left
+    case 38: // up
+    case 75: // k
+      slid35.prev()
+      break
+    case 34: // page down
+    case 39: // right
+    case 40: // down
+    case 74: // j
+      slid35.next()
+      break
+    //case 36 : // Home
+    //case 35 : // End
+    //case 32 : // Space
+    default:
+      prevent = false
+  }
+  prevent && ev.preventDefault()
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Progress Indicator</h1>
+<pre><code class="javascript executable">$('&lt;div id="counter"&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;')
+  .appendTo('body')
+  .on('update', function() {
+    var finished = slid35.getCurrent() + 1
+    , progress = finished / $slid35.section.length * 100
+    $('#counter&gt;div').width(progress+'%')
+  })
+  .trigger('update')
+$window.on('hashchange', function(ev, idx) {
+  $('#counter').trigger('update')
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Progress Indicator Style</h1>
+<pre><code class="css">#counter {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+}
+#counter&gt;div {
+    -webkit-transition: width 0.5s;
+    overflow: hidden;
+    height: 4px;
+    background: white;
+}
+</code></pre>
+</section>
+
+<section>
+<h1>One Slide a Time</h1>
+<pre><code class="javascript executable">$window
+  .on('hashchange', function(ev) {
+    $slid35.section.removeAttr('aria-selected')
+    $(slid35.getSection()).attr('aria-selected', true)
+  })
+  .trigger('hashchange')
+</code></pre>
+<pre style="float: left"><code class="css executable">#slid35.hide&gt;section {
+  display: none;
+}
+#slid35&gt;section[aria-selected] {
+  display: inline-block;
+}
+</code></pre>
+<pre><code class="css executable">#slid35 {
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -400px;
+}
+</code></pre>
+<pre style="clear: both"><code class="javascript executable">$slid35.attr('class', 'hide')
+</code></pre>
+</section>
+
+<section>
+<h1>Scale Transform</h1>
+<pre><code class="javascript">$.cssProps['transform'] = 'webkitTransform'
+//in jQuery source, $().css definition:
+//name = jQuery.cssProps[ name ] || name;
+</code></pre>
+<pre><code class="javascript executable">$slid35.css('transform', 'scale(1.2)')
+</code></pre>
+<pre><code class="javascript executable">$slid35.removeAttr('style')
+</code></pre>
+</section>
+
+<section>
+<h1>Fit Browser Window</h1>
+<pre><code class="javascript executable">$(window)
+  .on('resize', function(ev) {
+    var body = document.body
+    , sx = window.innerWidth / 800
+    , sy = window.innerHeight / 600
+    $slid35.css({'transform': 'scale('+Math.min(sx, sy)+')'})
+  })
+  .trigger('resize')
+</code></pre>
+</section>
+
+<section>
+<h1>Fullscreen</h1>
+<pre><code class="javascript executable">var html = document.documentElement
+, requestFullscreen = html.requestFullscreen
+                      || html.requestFullScreen //WTF!
+                      || html.mozRequestFullScreen
+                      || html.webkitRequestFullScreen
+if (requestFullscreen) {
+  requestFullscreen.apply(html);
+}
+</code></pre>
+</section>
+
+<section>
+<h1>Change Hash To Avoid Page Scroll</h1>
+<pre><code class="javascript executable">slid35.getCurrent = function() {
+  var current = location.hash.substring(2)
+  if ('/' === current[0]) current = current.substring(1)
+  return +current || 0
+}
+
+slid35.go = function(idx) {
+  location.hash = '#/' + idx
+}
+</code></pre>
+</section>
+
+<section>
+<h1>Slide Left</h1>
+<pre><code class="css executable">#slid35.slideleft {
+    overflow: hidden;
+}
+#slid35.slideleft&gt;section {
+    -webkit-transition: left 0.5s;
+    display: inline-block;
+    position: absolute;
+    left: -150%;
+}
+#slid35.slideleft&gt;section[aria-selected] {
+  left: 0;
+}
+#slid35.slideleft&gt;section[aria-selected] ~ section {
+  left: 150%;
+}
+</code></pre>
+<pre style="clear: both"><code class="javascript executable">$slid35.attr('class', 'slideleft')
+</code></pre>
+</section>
+
+<section>
+<h1>Slide Up</h1>
+<!-- <pre><code class="javascript executable">$('style').html('')
+var $exec = $('.executable')
+, idx = $exec.index(this)
+$exec.eq(idx + 1).trigger(slid35.touchclick)
+</code></pre> -->
+<pre><code class="css executable">#slid35.slideup {
+    overflow: hidden;
+}
+#slid35.slideup&gt;section {
+    -webkit-transition: all 1.2s;
+    -webkit-transform: translate3d(0, -120%, 0);
+    opacity: 0;
+    display: inline-block;
+    position: absolute;
+}
+#slid35.slideup&gt;section[aria-selected] {
+    -webkit-transform: translate3d(0, 0, 0);
+    opacity: 1;
+}
+#slid35.slideup&gt;section[aria-selected] ~ section {
+    -webkit-transform: translate3d(0, 120%, 0);
+    opacity: 0;
+}
+</code></pre>
+<pre style="clear: both"><code class="javascript executable">$slid35.attr('class', 'slideup')
+</code></pre>
+</section>
+
+<section>
+<h1>Zoom In & Fade Out</h1>
+<pre><code class="css executable">#slid35.zoomfade {
+    -webkit-perspective: 600px;
+}
+#slid35.zoomfade&gt;section {
+    -webkit-transition: all 0.8s;
+    -webkit-transform: translateZ(300px);
+    opacity: 0;
+    display: inline-block;
+    position: absolute;
+    top:0; left: 0;
+}
+#slid35.zoomfade&gt;section[aria-selected] {
+    -webkit-transform: translateZ(0px);
+    opacity: 1;
+}
+#slid35.zoomfade&gt;section[aria-selected] ~ section {
+    -webkit-transform: translateZ(-300px);
+    opacity: 0;
+}
+</code></pre>
+<pre style="clear: both"><code class="javascript executable">$slid35.attr('class', 'zoomfade')
+</code></pre>
+</section>
+
+<section>
+<h1>Control by Socket.io - Client - Audience</h1>
+<pre><code class="javascript">
+socket.on('scroll', function (to) {
+var socket = io.connect('http://yuest.slid35.com')
+, $ce = $('code.executable')
+  $window.scrollTop(to)
+})
+socket.on('hashchange', function (to) {
+  location.hash = to
+})
+socket.on('execute', function (idx) {
+  var $el = $ce.eq(idx)
+  if ($el.is('.executable')) $el.trigger(slid35.touchclick)
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Control by Socket.io - Client - Speaker</h1>
+<pre><code class="javascript">
+var socket = io.connect('http://yuest.slid35.com')
+, $ce = $('code.executable')
+$window.on('scroll', function() {
+  socket.emit('scroll', $window.scrollTop())
+})
+$window.on('hashchange', function() {
+  socket.emit('hashchange', location.hash)
+})
+$ce.one(slid35.touchclick, function(ev) {
+  var idx = $ce.index(this)
+  socket.emit('execute', idx)
+  if (2 === idx) $window.off('scroll')
+})
+</code></pre>
+</section>
+
+<section>
+<h1>Control by Socket.io - Server</h1>
+<pre><code class="javascript">
+io.sockets.on('connection', function (socket) {
+  socket.on('scroll', function (to) {
+    socket.broadcast.emit('scroll', to)
+  })
+  socket.on('hashchange', function (to) {
+    socket.broadcast.emit('hashchange', to)
+  })
+  socket.on('execute', function (idx) {
+    socket.broadcast.emit('execute', idx)
+  })
+})
+</code></pre>
+</section>
+
+<section>
+  <h1>Referrence</h1>
+  <ul>
+    <li>Safari CSS Effects Guide</li>
+    <li><a href="http://css3.bradshawenterprises.com/all/">CSS Transition/Transform/Animation</a></li>
+  </ul>
+  <ul>
+    <li>dzslides <a href="https://github.com/paulrouget/dzslides">https://github.com/paulrouget/dzslides</a></li>
+    <li>shower <a href="https://github.com/pepelsbey/shower">https://github.com/pepelsbey/shower</a></li>
+    <li>impress.js <a href="http://bartaz.github.com/impress.js">http://bartaz.github.com/impress.js</a></li>
+  </ul>
+</section>
+
+<section class="heading">
+<hgroup>
+<h1>Thanks</h1>
+<h2>any questions?</h2>
+</hgroup>
+</section>
+
+</div>
+
+<script src="jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="highlight.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+window.slid35 = {}
+slid35.touchclick = 'ontouchstart' in window ? 'touchstart' : 'click'
+window.$slid35 = $('#slid35')
+$slid35.section = $slid35.children('section')
+window.$window = $(window)
+$slid35.section.each(function(i, section) {
+  section.id = 's' + i
+})
+$('code.javascript.executable').one(slid35.touchclick, function(ev) {
+  ev.stopPropagation()
+  $(this).removeClass('executable')
+  eval('(function(){'+$(this).text()+'}())')
+})
+location.hash.length > 1 && $(function() {
+  var current = location.hash.substring(2)
+  if ('/' === current[0]) current = current.substring(1)
+  current = +current
+  $('#slid35>section').each(function(i, section) {
+    if (i >= current) return
+    $('.executable', section).each(function() {
+      $(this).trigger(slid35.touchclick)
+    })
+  })
+  var backslash = current > 14 ? '/' : 's'
+  setTimeout(function() {
+    location.hash = '#' + backslash + current
+  }, 0)
+})
+$.cssProps['transform'] = 'webkitTransform'
+$.cssProps['transition'] = 'webkitTransition'
+</script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function() {
+var socket = io.connect('http://yuest.slid35.com')
+, $ce = $('code.executable')
+}())
+</script>
+</body>
+</html>

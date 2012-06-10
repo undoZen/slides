@@ -1,0 +1,175 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/*
+html {
+    height: 100%;
+}
+body {
+    height: 100%;
+    overflow: visible;
+}
+#wrapper {
+    height: 100%;
+}
+header, section {
+    height: 100%;
+}
+    */
+
+html, body {
+    min-height: 100%;
+}
+body {
+    background: black;
+}
+
+#slid35 {
+    color: white;
+    width: 800px;
+    height: 600px;
+    margin:0 auto;
+}
+#slid35.center {
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -400px;
+}
+
+#slid35>section {
+    background: #111;
+    clear: both;
+    display: inline-block;
+    width: 800px;
+    height: 600px;
+    margin-bottom: 50px;
+}
+
+#counter {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+}
+#counter>div {
+    -webkit-transition: width 0.5s;
+    overflow: hidden;
+    height: 4px;
+    background: white;
+}
+
+body {
+    font-family: Shanti, tahoma, arial, sans, sans-serif;
+    font-size: 22px;
+}
+h1,h2,h3 {
+    font-family: Signika, 'Times New Roman', serif;
+}
+code {
+    font-family: 'Ubuntu Mono', Consolas, monospace;
+}
+
+h1 { font-size: 40px; margin: 5px 8px;}
+
+ul {
+    display: inline-block;
+    font-size: 30px;
+    line-height: 1.6;
+    margin: 5px;
+    padding: 10px;
+    list-style: square inside;
+}
+ul li {
+}
+
+hgroup,
+section.heading>h1 {
+    margin: 200px 20px 0;
+    text-align: center;
+}
+section.heading>h1 {
+    margin: 240px 20px 0;
+}
+.heading h1 { font-size: 80px; }
+.heading h2 { font-size: 40px; margin-top: 15px }
+.heading h3 { font-size: 20px; margin-top: 25px; }
+
+pre>code {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    background: #1F1F1F;
+    -webkit-border-radius: 10px;
+    -webkit-transition: background-color 0.5s;
+}
+.executable {
+    background: #661;
+    cursor: pointer;
+}
+
+#wrapper {
+    width: 800px;
+    margin: auto;
+}
+#wrapper>header,
+#wrapper>section {
+    height: 600px;
+}
+#wrapper {
+    -webkit-perspective: 300px;
+    -webkit-perspective-origin: 50% 0%;
+    -webkit-transform-style: preserve-3d;
+}
+#wrapper>header {
+    background-color: #eee;
+    -webkit-transform-origin: 50% 0%;
+    -webkit-transform: rotateX(25deg);
+}
+h1 {
+}
