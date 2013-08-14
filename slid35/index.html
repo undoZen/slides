@@ -28,8 +28,8 @@
 <section class="heading">
 <hgroup>
   <h1>HTML5 on Slides</h1>
-  <h2>by (@)yue(.)st</h2>
-  <h3>watch it online -> http://yuest.slid35.com/s/slid35/ (webkit only)</h3>
+  <h2>by (@)undoZen</h2>
+  <h3>watch it online -> http://slid35.com/s/slid35/ (webkit only)</h3>
 </hgroup>
 </section>
 
@@ -57,7 +57,7 @@
 &lt;section class=&quot;heading&quot;&gt;
 &lt;hgroup&gt;
   &lt;h1&gt;HTML5 on Slides&lt;/h1&gt;
-  &lt;h2&gt;by (@)yue(.)st&lt;/h2&gt;
+  &lt;h2&gt;by (@)undoZen&lt;/h2&gt;
 &lt;/hgroup&gt;
 &lt;/section&gt;
 
@@ -375,7 +375,7 @@ $exec.eq(idx + 1).trigger(slid35.touchclick)
 <h1>Control by Socket.io - Client - Audience</h1>
 <pre><code class="javascript">
 socket.on('scroll', function (to) {
-var socket = io.connect('http://yuest.slid35.com')
+var socket = io.connect('http://slid35.com')
 , $ce = $('code.executable')
   $window.scrollTop(to)
 })
@@ -392,7 +392,7 @@ socket.on('execute', function (idx) {
 <section>
 <h1>Control by Socket.io - Client - Speaker</h1>
 <pre><code class="javascript">
-var socket = io.connect('http://yuest.slid35.com')
+var socket = io.connect('http://slid35.com')
 , $ce = $('code.executable')
 $window.on('scroll', function() {
   socket.emit('scroll', $window.scrollTop())
@@ -485,7 +485,7 @@ $.cssProps['transition'] = 'webkitTransition'
 <script src="/socket.io/socket.io.js"></script>
 <script>
 (function() {
-var socket = io.connect('http://yuest.slid35.com')
+var socket = io.connect('http://slid35.com')
 , $ce = $('code.executable')
 }())
 </script>
